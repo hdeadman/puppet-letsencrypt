@@ -18,6 +18,10 @@ class letsencrypt::params {
     $install_method = 'package'
     $package_name = 'letsencrypt'
     $package_command = 'letsencrypt'
+  } elsif $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '16.10') >= 0 {
+    $install_method = 'package'
+    $package_name = 'certbot'
+    $package_command = 'certbot'
   } elsif $::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '16.04') >= 0 {
     $install_method = 'package'
     $package_name = 'letsencrypt'
