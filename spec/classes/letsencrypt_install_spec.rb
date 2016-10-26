@@ -5,11 +5,13 @@ describe 'letsencrypt::install' do
   let(:default_params) do
     {
       configure_epel: false,
+      package_ensure: 'installed',
       manage_install: true,
       manage_dependencies: true,
       path: '/opt/letsencrypt',
-      repo: 'git://github.com/letsencrypt/letsencrypt.git',
-      version: 'v0.1.0',
+      repo: 'https://github.com/letsencrypt/letsencrypt.git',
+      version: 'v0.9.3',
+      package_name: 'letsencrypt',
     }
   end
   let(:additional_params) { { } }
@@ -28,6 +30,7 @@ describe 'letsencrypt::install' do
     end
 
     describe 'with configure_epel => true' do
+      let(:facts) { { osfamily: 'RedHat', operatingsystem: 'RedHat', operatingsystemrelease: '7.0.1406', operatingsystemmajrelease: '7' } }
       let(:additional_params) { { install_method: 'package', configure_epel: true } }
 
       it { is_expected.to compile }
@@ -36,6 +39,13 @@ describe 'letsencrypt::install' do
         is_expected.to contain_class('epel')
         is_expected.to contain_package('letsencrypt').that_requires('Class[epel]')
       end
+    end
+
+    describe 'with package_ensure => 0.3.0-1.el7' do
+      let(:additional_params) { { install_method: 'package', package_ensure: '0.3.0-1.el7' } }
+
+      it { is_expected.to compile }
+      it { is_expected.to contain_package('letsencrypt').with_ensure('0.3.0-1.el7') }
     end
   end
 
@@ -46,8 +56,8 @@ describe 'letsencrypt::install' do
 
     it 'should contain the correct resources' do
       is_expected.to contain_vcsrepo('/opt/letsencrypt').with({
-        source: 'git://github.com/letsencrypt/letsencrypt.git',
-        revision: 'v0.1.0'
+        source: 'https://github.com/letsencrypt/letsencrypt.git',
+        revision: 'v0.9.3'
       })
       is_expected.to contain_package('python')
       is_expected.to contain_package('git')
